@@ -30,17 +30,23 @@ knitr::opts_chunk$set(echo = TRUE)
  
 ```
 # for github install
-remotes::install_github("BigelowLab/auntie)"
+remotes::install_github("BigelowLab/auntie, up = FALSE)"
 
 # for local install (preferred for eDNA group members)
-devtools::install("/mnt/storage/data/edna/packages/auntie")
+devtools::install("/mnt/storage/data/edna/packages/auntie", up = FALSE)
 ```
 
 ## Functionality
 
 ### Filepairs
 
-### [reformat]() wrapper
+Many operations depend upon `forward/reverse` file pairs.  We have developed some functions for listing and testing file pairings. 
+
+
+### [reformat](https://github.com/BioInfoTools/BBMap/blob/a9ceda047a7c918dc090de0fdbf6f924292d4a1f/sh/reformat.sh) wrapper
+
+We provide a convenience wrapper, `bbmap_subsample()` to subsample fastq files using `reformat.sh`
 
 ### [cutadapt]() wrapper
 
+Not implemented yet.
