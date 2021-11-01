@@ -1,0 +1,20 @@
+Package: auntie
+Type: Package
+Title: auntie: extra utilities for the eDNA project
+Version: 0.1
+Author: Ben Tupper <btupper@bigelow.org>, Robin S. Sleith <rsleith@bigelow.org>, Alex Michaud  <amichaud@bigelow.org>
+Maintainer: Ben Tupper <btupper@bigelow.org>
+Description: Provides added tools for working in the eDNA project.
+URL: https://github.com/BigelowLab/auntie
+Encoding: UTF-8
+Depends:
+    R (>= 3.5)
+Imports:
+  utils,
+  rlang,
+  dplyr,
+  charlier,
+  ShortRead,
+  Biostrings
+RoxygenNote: 7.1.2
+License: MIT + file LICENSE
