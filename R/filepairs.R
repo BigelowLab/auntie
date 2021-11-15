@@ -30,11 +30,12 @@ verify_filepairs <- function(x,
       warning(...))
   }
   
-  if (!all((elements %in% names(x)))) stop("input is missing one or more required elements - are they named according to 'element' argument?")
-
+  if (!all((elements %in% names(x)))) {
+    stop("input is missing one or more required elements - are they named according to 'element' argument?")
+  }
+  
   ll <- lengths(x)
-
-  if (length(ll[2]) == 0){
+  if ((length(ll) < 2) || (ll[2] == 0)){
     if (require_reverse) stop_or_warn("stop", "reverse elements are required")
   } else {
     if (!all(ll %in% ll[1])) stop_or_warn("stop","elements of input must be the same length")
@@ -118,17 +119,25 @@ deinterleave_filepairs <- function(x, elements = c("forward", "reverse")){
 #'   \item size_pass logical, TRUE/FALSE if the size passes and NA when min_size is NA
 #' }
 size_filepairs <- function(x, min_size = NA, verify = FALSE, ...){
-  # TODO make this work for PACBIO
-  if (verify) x <- verify_filepairs(x) 
-  nm <- names(x)
-  sz <- sapply(x, function(x) file.info(x)$size, simplify = FALSE)
-  nmsz <- paste0(nm, "_size")
-  size_pass <- sz[[1]] > min_size[1] | sz[[2]] > min_size[1]
-  dplyr::as_tibble(x) %>%
-    dplyr::mutate(
-      !!nmsz[1] := sz[[1]],
-      !!nmsz[2] := sz[[2]],
-      size_pass = size_pass)
+   if (verify) x <- verify_filepairs(x) 
+   nm <- names(x)
+   sz <- sapply(x, function(x) file.info(x)$size, simplify = FALSE)
+   nmsz <- paste0(nm, "_size")
+   if (length(x) == 2){
+     size_pass <- sz[[1]] > min_size[1] & sz[[2]] > min_size[1]
+     r <- dplyr::as_tibble(x) %>%
+       dplyr::mutate(
+         !!nmsz[1] := sz[[1]],
+         !!nmsz[2] := sz[[2]],
+         size_pass = size_pass)
+   } else {
+     size_pass <- sz[[1]] > min_size[1] 
+     r <- dplyr::as_tibble(x) %>%
+       dplyr::mutate(
+         !!nmsz[1] := sz[[1]],
+         size_pass = size_pass)
+   }
+   r
 }
 
 
