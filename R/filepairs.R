@@ -106,9 +106,12 @@ deinterleave_filepairs <- function(x, elements = c("forward", "reverse")){
 #' Compute and test the size of filepairs
 #' 
 #' @export
-#' @param x named list of filepairs, typically 'forward' and 'reverse'
+#' @param x named list of filepairs, typically 'forward' and 'reverse'. If one or the other
+#'  has zero-length, the then logic of the output applies only to the other element
 #' @param min_size numeric or NA, the mininum size of a file required
 #' @param verify logical, if TRUE pass the input to \code{verify_filepairs}
+#' @param missing_value NA or numeric, when a list weirdly only has one (forward or reverse) then 
+#'   use this value for size
 #' @param ... other arguments passed to \code{verify_filepairs} except \code{min_size}
 #' @return tibble of 
 #' \itemize{
@@ -118,18 +121,48 @@ deinterleave_filepairs <- function(x, elements = c("forward", "reverse")){
 #'   \item reverse_size, numeric file sizes in bytes
 #'   \item size_pass logical, TRUE/FALSE if the size passes and NA when min_size is NA
 #' }
-size_filepairs <- function(x, min_size = NA, verify = FALSE, ...){
+size_filepairs <- function(x, min_size = NA, verify = FALSE, missing_value = 0, ...){
    if (verify) x <- verify_filepairs(x) 
+   n = lengths(x)
    nm <- names(x)
-   sz <- sapply(x, function(x) file.info(x)$size, simplify = FALSE)
+   sz <- sapply(x, function(ff) {
+     s = if(length(ff) != 0 && all(file.exists(ff))) {
+       file.info(ff)$size 
+     } else {
+       0
+     }
+     s
+   }, simplify = FALSE)
    nmsz <- paste0(nm, "_size")
    if (length(x) == 2){
-     size_pass <- sz[[1]] > min_size[1] & sz[[2]] > min_size[1]
-     r <- dplyr::as_tibble(x) %>%
-       dplyr::mutate(
-         !!nmsz[1] := sz[[1]],
-         !!nmsz[2] := sz[[2]],
-         size_pass = size_pass)
+     
+     if (sz[[1]] == 0){
+       sz[[1]] = rep(missing_value, n[2])
+       x[[1]] <- rep(NA_character_, n[2])
+       size_pass <- sz[[2]] > min_size[1]
+       r <- dplyr::as_tibble(x) %>%
+         dplyr::mutate(
+           !!nmsz[1] := sz[[1]],
+           !!nmsz[2] := sz[[2]],
+           size_pass = size_pass)
+    } else if (sz[[2]] == 0){
+        sz[[2]] = rep(missing_value, n[1])
+        x[[2]] <- rep(NA_character_, n[1])
+        size_pass <- sz[[1]] > min_size[1]
+        r <- dplyr::as_tibble(x) %>%
+          dplyr::mutate(
+            !!nmsz[1] := sz[[1]],
+            !!nmsz[2] := sz[[2]],
+            size_pass = size_pass)
+    } else {
+        size_pass <- sz[[1]] > min_size[1] & sz[[2]] > min_size[1]
+        r <- dplyr::as_tibble(x) %>%
+          dplyr::mutate(
+            !!nmsz[1] := sz[[1]],
+            !!nmsz[2] := sz[[2]],
+            size_pass = size_pass)
+     }
+     
    } else {
      size_pass <- sz[[1]] > min_size[1] 
      r <- dplyr::as_tibble(x) %>%

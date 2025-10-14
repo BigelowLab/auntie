@@ -4,14 +4,18 @@
 \alias{size_filepairs}
 \title{Compute and test the size of filepairs}
 \usage{
-size_filepairs(x, min_size = NA, verify = FALSE, ...)
+size_filepairs(x, min_size = NA, verify = FALSE, missing_value = 0, ...)
 }
 \arguments{
-\item{x}{named list of filepairs, typically 'forward' and 'reverse'}
+\item{x}{named list of filepairs, typically 'forward' and 'reverse'. If one or the other
+has zero-length, the then logic of the output applies only to the other element}
 
 \item{min_size}{numeric or NA, the mininum size of a file required}
 
 \item{verify}{logical, if TRUE pass the input to \code{verify_filepairs}}
+
+\item{missing_value}{NA or numeric, when a list weirdly only has one (forward or reverse) then 
+use this value for size}
 
 \item{...}{other arguments passed to \code{verify_filepairs} except \code{min_size}}
 }
