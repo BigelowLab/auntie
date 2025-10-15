@@ -136,7 +136,7 @@ size_filepairs <- function(x, min_size = NA, verify = FALSE, missing_value = 0, 
    nmsz <- paste0(nm, "_size")
    if (length(x) == 2){
      
-     if (sz[[1]] == 0){
+     if (sz[[1]][1] == 0){
        sz[[1]] = rep(missing_value, n[2])
        x[[1]] <- rep(NA_character_, n[2])
        size_pass <- sz[[2]] > min_size[1]
@@ -145,7 +145,7 @@ size_filepairs <- function(x, min_size = NA, verify = FALSE, missing_value = 0, 
            !!nmsz[1] := sz[[1]],
            !!nmsz[2] := sz[[2]],
            size_pass = size_pass)
-    } else if (sz[[2]] == 0){
+    } else if (sz[[2]][1] == 0){
         sz[[2]] = rep(missing_value, n[1])
         x[[2]] <- rep(NA_character_, n[1])
         size_pass <- sz[[1]] > min_size[1]
