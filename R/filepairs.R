@@ -7,6 +7,15 @@ count_filepairs <- function(x){
   lengths(x)
 }
 
+#' Test is a filepair is single ended (missing forward or reverse)
+#'
+#' @export
+#' @param x a list with file pairings as character vectors
+#' @return logical TRUE if single ended
+is_singleended <- function(x){
+  any(count_filepairs(x) == 0)
+}
+
 #' Verify that a list of file pairs is suitable for processing.
 #'
 #' @export
@@ -67,6 +76,7 @@ verify_filepairs <- function(x,
   }
   x
 }
+
 
 
 #' Given a filepair list, make a vector of alternating filenames
